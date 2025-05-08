@@ -39,7 +39,7 @@ def define_role():
     If the user doesn't want to define a role, it can be set to None or an empty string in the prompt that evtually gets sent to the LLM.
     """
     # Prompt user for role
-    print('Please define the role of the LLM assistant.')
+    print('\nPlease define the role of the LLM assistant.')
     print('Examples: teacher, historian, programmer, friend, etc.')
     print('You may leave this blank if you have no specific role in mind.')
     role = input('Enter role: ')
@@ -62,6 +62,23 @@ def define_response_style():
     User will be offered a pre-defined list of common response styles or can provide their own.
     Initial thoughts for response styles include: concise, detailed, outline-style.
     """
+    print('\nSelect a response style:')
+    styles = ['Concise', 'Detailed', 'Outline-style', 'Custom']
+    
+    # Display available styles
+    for idx, style in enumerate(styles, 1):
+        print(f'{idx}. {style}')
+    
+    # Prompt user for choice
+    choice = int(input('Enter your choice (1-4): '))
+    
+    # Handle custom response style
+    if choice == 4:
+        custom_style = input('Enter your custom response style: ').strip()
+        return custom_style
+    
+    else:
+        return styles[choice-1]
 
 
 # Function to provide the actual prompt
