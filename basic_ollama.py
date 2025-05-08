@@ -87,11 +87,79 @@ def build_prompt():
     This function allows the user to provide the actual prompt for the LLM assistant.
     The prompt can be a simple question or a more complex request.
     """
+    print('\nEnter your prompt/question:')
+    # Prompt user for input
+    user_prompt = input("> ").strip()
+    
+    return user_prompt
+
 
 # Function to send the langchain call to the LLM and provide a response
-def send_query():
+def send_query(model_name, role, style, prompt_text):
     """
     This function sends the query to the LLM and retrieves the response.
     It uses the langchain library to handle the interaction with the LLM.
     """
+    # Initialize the Ollama model
+    llm = Ollama(model=model_name)
     
+    # Build template based on whether role is provided
+    if role:
+        template = f"""You are a {role}.
+
+Question: {{question}}
+
+Please provide a {style} answer."""
+        
+        prompt_template = PromptTemplate(
+            template=template,
+            input_variables=["question"]
+        )
+    
+    else:
+        template = f"""Question: {{question}}
+
+Please provide a {style} answer."""
+        
+        prompt_template = PromptTemplate(
+            template=template,
+            input_variables=["question"]
+        )
+    
+    # Create the chain
+    chain = LLMChain(prompt=prompt_template, llm=llm)
+    
+    # Get response
+    try:
+        response = chain.run(question=prompt_text)
+        return response
+    
+    except Exception as e:
+        return f'Error getting response: {str(e)}'
+
+
+def main():
+    """Main function to run the program."""
+    print('Welcome to the Ollama local LLM Interface')
+    
+    # Select model
+    model_name = select_llm()
+    
+    # Define role
+    role = define_role()
+    
+    # Define style
+    style = define_response_style()
+    
+    # Build prompt
+    prompt_text = build_prompt()
+    
+    # Send query and print response
+    print('\nSending query to LLM, please wait...\n')
+    response = send_query(model_name, role, style, prompt_text)
+    
+    print('\n=== LLM Response ===\n')
+    print(response)
+
+if __name__ == '__main__':
+    main()
