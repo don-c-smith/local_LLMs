@@ -8,13 +8,18 @@ def select_llm():
 
 # Function to define the "role" of the LLM assistant
 def define_role():
-    """This function allows the user to define the role of the LLM assistant."""
+    """
+    This function allows the user to define the role of the LLM assistant.
+    i.e., whether it should act as a teacher, friend, or any other role.
+    If the user doesn't want to define a role, it can be set to None or an empty string in the prompt that evtually gets sent to the LLM.
+    """
 
 # Function to choose a response style - either one of pre-defined options or free-entry
 def define_response_style():
     """
     This function allows the user to choose a response style for the LLM assistant.
     User will be offered a pre-defined list of common response styles or can provide their own.
+    Initial thoughts for response styles include: concise, detailed, outline-style.
     """
 
 # Function to provide the actual prompt
