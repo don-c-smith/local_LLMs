@@ -87,16 +87,29 @@ def define_response_style():
     for idx, style in enumerate(styles, 1):
         print(f'{idx}. {style}')
     
-    # Prompt user for choice
-    choice = int(input('Enter your choice (1-5): '))
-    
-    # Handle custom response style
-    if choice == 5:
-        custom_style = input('Enter your custom response style: ').strip()
-        return custom_style
-    
-    else:
-        return styles[choice-1]
+    # Get user selection with validation
+    while True:
+        try:
+            selection = input('Enter the number of the response style you want to use: ')
+            selection_idx = int(selection) - 1
+            
+            if 0 <= selection_idx < len(styles):
+                selected_style = styles[selection_idx]
+                
+                # Handle custom response style
+                if selected_style == 'Custom':
+                    custom_style = input('You selected "Custom". Please enter your custom response style: ').strip()
+                    print(f'Defined response style as: {custom_style}')
+                    return custom_style
+                else:
+                    print(f'Selected response style: {selected_style}')
+                    return selected_style
+            
+            else:
+                print(f'Invalid selection. Please enter a number between 1 and {len(styles)}.')
+        
+        except ValueError:
+            print('Invalid selection. Please enter a valid number.')
 
 
 # Function to provide the actual prompt
