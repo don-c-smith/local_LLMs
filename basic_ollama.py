@@ -9,21 +9,39 @@ from langchain.prompts import PromptTemplate
 # Function to select a local LLM
 def select_llm():
     """This function helps the user to select a local LLM available in Ollama."""
-    # Fetch available models in Ollama
     try:
-        models = ollama.list()
-        model_names = [model['name'] for model in models['models']]
+        # Fetch available models in Ollama
+        response = ollama.list()
+        
+        # Extract model names from the ListResponse object
+        # In the new API, models is an attribute and each model's name is in the 'model' attribute of each Model object
+        model_names = []
+        for model in response.models:
+            model_names.append(model.model)  # Use .model attribute to get the name
+        
+        if not model_names:
+            print("No models found. Using default model: 'gemma3:12b'")
+            return 'gemma3:12b'
         
         # Display available models
         print('Available models:')
         for idx, name in enumerate(model_names, 1):
             print(f'{idx}. {name}')
         
-        # Get user selection
-        selection = int(input('Enter the number of the model you want to use: '))
-        selected_model = model_names[selection-1]
-        print(f'Selected model: {selected_model}')
-        return selected_model
+        # Get user selection with validation
+        while True:
+            try:
+                selection = input('Enter the number of the model you want to use: ')
+                selection_idx = int(selection) - 1
+                
+                if 0 <= selection_idx < len(model_names):
+                    selected_model = model_names[selection_idx]
+                    print(f'Selected model: {selected_model}')
+                    return selected_model
+                else:
+                    print(f"Invalid selection. Please enter a number between 1 and {len(model_names)}.")
+            except ValueError:
+                print("Please enter a valid number.")
     
     except Exception as e:
         print(f'Error: {e}')
@@ -63,14 +81,14 @@ def define_response_style():
     Initial thoughts for response styles include: concise, detailed, outline-style.
     """
     print('\nSelect a response style:')
-    styles = ['Concise', 'Detailed', 'Outline-style', 'Custom']
+    styles = ['Normal', 'Concise', 'Detailed', 'Outline-style', 'Custom']
     
     # Display available styles
     for idx, style in enumerate(styles, 1):
         print(f'{idx}. {style}')
     
     # Prompt user for choice
-    choice = int(input('Enter your choice (1-4): '))
+    choice = int(input('Enter your choice (1-5): '))
     
     # Handle custom response style
     if choice == 4:
@@ -140,7 +158,7 @@ Please provide a {style} answer."""
 
 def main():
     """Main function to run the program."""
-    print('Welcome to the Ollama local LLM Interface')
+    print('Welcome to the Ollama local LLM Interface.\n')
     
     # Select model
     model_name = select_llm()
