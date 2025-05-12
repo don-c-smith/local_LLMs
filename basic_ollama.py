@@ -91,7 +91,7 @@ def define_response_style():
     choice = int(input('Enter your choice (1-5): '))
     
     # Handle custom response style
-    if choice == 4:
+    if choice == 5:
         custom_style = input('Enter your custom response style: ').strip()
         return custom_style
     
@@ -107,7 +107,7 @@ def build_prompt():
     """
     print('\nEnter your prompt/question:')
     # Prompt user for input
-    user_prompt = input("> ").strip()
+    user_prompt = input(">>> ").strip()
     
     return user_prompt
 
@@ -116,40 +116,43 @@ def build_prompt():
 def send_query(model_name, role, style, prompt_text):
     """
     This function sends the query to the LLM and retrieves the response.
-    It uses the langchain library to handle the interaction with the LLM.
+    It uses the updated langchain library syntax.
     """
-    # Initialize the Ollama model
-    llm = Ollama(model=model_name)
-    
-    # Build template based on whether role is provided
-    if role:
-        template = f"""You are a {role}.
-
-Question: {{question}}
-
-Please provide a {style} answer."""
-        
-        prompt_template = PromptTemplate(
-            template=template,
-            input_variables=["question"]
-        )
-    
-    else:
-        template = f"""Question: {{question}}
-
-Please provide a {style} answer."""
-        
-        prompt_template = PromptTemplate(
-            template=template,
-            input_variables=["question"]
-        )
-    
-    # Create the chain
-    chain = LLMChain(prompt=prompt_template, llm=llm)
-    
-    # Get response
     try:
-        response = chain.run(question=prompt_text)
+        # Import the correct class
+        from langchain_ollama import OllamaLLM
+        from langchain.prompts import PromptTemplate
+        
+        # Initialize the Ollama model with the updated class
+        llm = OllamaLLM(model=model_name)
+        
+        # Handle "Normal" style by making it empty
+        style_instruction = f"Please provide a {style} answer." if style.lower() != "normal" else ""
+        
+        # Build template based on whether role is provided
+        if role:
+            template = f"""You are a {role}.
+
+                        Question: {{question}}
+
+                        {style_instruction}"""
+        else:
+            template = f"""Question: {{question}}
+
+                        {style_instruction}"""
+        
+        # Create the prompt template
+        prompt_template = PromptTemplate(
+            template=template,
+            input_variables=["question"]
+        )
+        
+        # Use pipe syntax instead of LLMChain
+        chain = prompt_template | llm
+        
+        # Use invoke instead of run
+        response = chain.invoke({"question": prompt_text})
+        
         return response
     
     except Exception as e:
@@ -176,7 +179,7 @@ def main():
     print('\nSending query to LLM, please wait...\n')
     response = send_query(model_name, role, style, prompt_text)
     
-    print('\n=== LLM Response ===\n')
+    print('=== LLM Response ===\n')
     print(response)
 
 if __name__ == '__main__':
