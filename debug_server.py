@@ -48,3 +48,6 @@ def debug_ollama():
     except Exception as e:
         print(f"\nError: {e}")
         print("Make sure your Ollama server is running.")
+
+if __name__ == "__main__":
+    debug_ollama()
