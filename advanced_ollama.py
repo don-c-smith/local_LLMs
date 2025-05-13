@@ -111,21 +111,18 @@ def define_role():
     This function allows the user to define the role of the LLM assistant.
     """
     # Predefined roles for quick selection
-    predefined_roles = [
-        "teacher", "programmer", "historian", "scientist", 
-        "writing assistant", "creative writer", "consultant"
-    ]
+    roles = ['Teacher', 'Programmer', 'Historian', 'Scientist', 'Writing assistant', 'Creative writer', 'Business consultant']
     
     print('\nPlease define the role of the LLM assistant.')
     print('Examples: teacher, historian, programmer, friend, etc.')
     print('Common roles:')
-    for idx, role in enumerate(predefined_roles, 1):
+    for idx, role in enumerate(roles, 1):
         print(f'{idx}. {role}')
     print('0. Custom role')
-    print('Press Enter to skip (no specific role)')
+    print('Press Enter to skip this step (i.e. to assign no specific role to the model)')
     
     while True:
-        role_input = input('Select number or enter custom role: ')
+        role_input = input('Select number or enter a custom role: ')
         
         # Handle empty input
         if not role_input.strip():
@@ -139,24 +136,27 @@ def define_role():
                 custom_role = input('Enter your custom role: ').strip()
                 if custom_role:
                     if len(custom_role) > 50:
-                        print('Role description too long. Please keep it under 50 characters.')
+                        print('Role description too long. Please keep your description under 50 characters.')
                         continue
                     print(f'Role defined as: {custom_role}')
                     return custom_role
+                
                 else:
-                    print('No role entered. Proceeding without a defined role.')
+                    print('No specific role entered. Proceeding without a defined role.')
                     return None
-            elif 1 <= selection <= len(predefined_roles):
-                selected_role = predefined_roles[selection-1]
+            
+            elif 1 <= selection <= len(roles):
+                selected_role = roles[selection-1]
                 print(f'Role defined as: {selected_role}')
                 return selected_role
+            
             else:
-                print(f'Invalid selection. Please enter a number between 0 and {len(predefined_roles)}.')
+                print(f'Invalid selection. Please enter a number between 0 and {len(roles)}.')
         
         # Handle text input (custom role)
         except ValueError:
             if len(role_input) > 50:
-                print('Role description too long. Please keep it under 50 characters.')
+                print('Role description too long. Please keep your description under 50 characters.')
                 continue
             print(f'Role defined as: {role_input}')
             return role_input
