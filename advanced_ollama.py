@@ -169,7 +169,7 @@ def define_response_style():
     """
     # Dictionary of styles with descriptions
     styles = {
-        'Normal': 'Standard, balanced response',
+        'Normal': 'A standard, balanced response',
         'Concise': 'Brief and to the point',
         'Detailed': 'Thorough and comprehensive',
         'Outline-style': 'Organized with headings and bullet points',
