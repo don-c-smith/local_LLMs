@@ -17,7 +17,7 @@ WRAPPER = textwrap.TextWrapper(width=80, break_long_words=False, replace_whitesp
 
 # Handle Ctrl+C gracefully
 def signal_handler(sig, frame):
-    print('\n\nExiting the program. Goodbye!')
+    print('\nExiting the program. Goodbye!')
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -26,8 +26,8 @@ signal.signal(signal.SIGINT, signal_handler)
 def select_llm(retries=0):
     """This function helps the user to select a local LLM available in Ollama."""
     if retries >= MAX_RETRIES:
-        print(f"Failed to connect to Ollama after {MAX_RETRIES} attempts.")
-        print(f"Using default model: '{DEFAULT_MODEL}' (if Ollama starts working)")
+        print(f'Failed to connect to Ollama after {MAX_RETRIES} attempts.')
+        print(f'Using default model: "{DEFAULT_MODEL}" (if Ollama starts working)')
         return DEFAULT_MODEL
     
     try:
@@ -37,20 +37,22 @@ def select_llm(retries=0):
         # Extract model names from the ListResponse object
         model_names = []
         for model in response.models:
-            model_names.append(model.model)  # Use .model attribute to get the name
+            model_names.append(model.model)  # Use .model attribute to fetch the name
         
         if not model_names:
-            print("No models found in your Ollama installation.")
-            install_choice = input("Would you like to install the default model? (y/n): ").lower()
+            print('No local models were found in your Ollama installation.')
+            install_choice = input('Would you like to install the default model? (Y/N): ').lower()
+            
             if install_choice.startswith('y'):
-                print(f"Please run 'ollama pull {DEFAULT_MODEL}' in your terminal.")
-            print(f"Using default model: '{DEFAULT_MODEL}'")
+                print(f'Please run "ollama pull {DEFAULT_MODEL}" in your terminal.')
+            
+            print(f'Using default model: "{DEFAULT_MODEL}"')
             return DEFAULT_MODEL
         
         # Check for environment variable to skip selection
         env_model = os.environ.get('OLLAMA_DEFAULT_MODEL')
         if env_model and env_model in model_names:
-            print(f"Using model from environment variable: '{env_model}'")
+            print(f'Using model from environment variable: "{env_model}"')
             return env_model
         
         # Display available models
@@ -61,16 +63,16 @@ def select_llm(retries=0):
         # Get user selection with validation
         while True:
             try:
-                selection = input('Enter the number of the model you want to use (or press Enter for default): ')
+                selection = input('Enter the number of the model you want to use (or press Enter to use the default model): ')
                 
                 # Handle empty input (default)
                 if not selection.strip():
                     # If DEFAULT_MODEL is available, use it; otherwise use first available model
                     if DEFAULT_MODEL in model_names:
-                        print(f"Using default model: '{DEFAULT_MODEL}'")
+                        print(f'Using default model: "{DEFAULT_MODEL}"')
                         return DEFAULT_MODEL
                     else:
-                        print(f"Using first available model: '{model_names[0]}'")
+                        print(f'Using first available model: "{model_names[0]}"')
                         return model_names[0]
                 
                 selection_idx = int(selection) - 1
@@ -80,20 +82,21 @@ def select_llm(retries=0):
                     print(f'Selected model: {selected_model}')
                     return selected_model
                 else:
-                    print(f"Invalid selection. Please enter a number between 1 and {len(model_names)}.")
+                    print(f'Invalid selection. Please enter a number between 1 and {len(model_names)}.')
             except ValueError:
-                print("Please enter a valid number or press Enter for default.")
+                print('Please enter a valid number or press Enter to use the default model.')
     
     except ConnectionRefusedError:
-        print("Error: Could not connect to Ollama server.")
-        print("Make sure the Ollama server is running (run 'ollama serve' in a terminal).")
-        retry = input(f"Retry connection? (y/n, {MAX_RETRIES-retries} attempts left): ").lower()
+        print('Error: Could not connect to Ollama server.')
+        print('Make sure the Ollama server is running (run "ollama serve" in your terminal).')
+        retry = input(f'Retry connection? (Y/N, {MAX_RETRIES-retries} attempts left): ').lower()
         if retry.startswith('y'):
-            print(f"Retrying in {RETRY_DELAY} seconds...")
+            print(f'Retrying in {RETRY_DELAY} seconds...')
             time.sleep(RETRY_DELAY)
             return select_llm(retries + 1)
+        
         else:
-            print(f"Using default model: '{DEFAULT_MODEL}' (if Ollama starts working)")
+            print(f'Using default model: "{DEFAULT_MODEL}" (if Ollama starts working)')
             return DEFAULT_MODEL
     
     except Exception as e:
