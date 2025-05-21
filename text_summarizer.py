@@ -1,7 +1,7 @@
 # Import the tkinter, Ollama, and langchain libraries, along with anything else we might need
 import tkinter as tk
-from tkinter import filedialog, scrolledtext, messagebox  # Additional tkinter components for file dialogs and rich text
-from langchain.llms import Ollama  # LangChain's Ollama wrapper for easier LLM interaction
+from tkinter import filedialog, scrolledtext, messagebox  # Additional tkinter components
+from langchain_ollama import OllamaLLM  # New modern import for Ollama
 from langchain.prompts import PromptTemplate  # For structured prompt formatting
 
 # Set up LLM query function to process text with the local LLM
@@ -26,10 +26,14 @@ def summarize_text(text):
     )
     # Create a LangChain prompt template with the input variable
     template = PromptTemplate(input_variables=["input_text"], template=prompt)
-    # Initialize the Ollama LLM with the specified model
-    llm = Ollama(model="gemma3:12b")
+    
+    # Initialize the Ollama LLM with the specified model - using modern OllamaLLM
+    llm = OllamaLLM(model="gemma3:12b")
+    
     # Generate the summary by sending the formatted prompt to the LLM
-    summary = llm(template.format(input_text=text))
+    formatted_prompt = template.format(input_text=text)
+    summary = llm.invoke(formatted_prompt)
+    
     return summary
 
 # Main function to build and manage the GUI application
@@ -43,17 +47,17 @@ def create_gui():
     # Variable to store the content of the loaded file
     file_content = ""
     
-    # Function to handle file upload via a dialog box
+    # Function to handle file upload via dialog
     def upload_file():
         """Opens file dialog and loads selected text file into the input area"""
-        # Open file dialog with a filter for text files
+        # Open file dialog with filter for text files
         file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         if not file_path:
-            return  # If user cancels the dialog
+            return  # User canceled the dialog
             
         # Read the selected file's content
         with open(file_path, "r", encoding="utf-8") as file:
-            nonlocal file_content  # Using the outer function's variable
+            nonlocal file_content  # Use the outer function's variable
             file_content = file.read()
             
         # Display the file content in the input text area
@@ -84,13 +88,12 @@ def create_gui():
             output_text.insert(tk.END, summary)  # Insert the summary
             save_btn.config(state=tk.NORMAL)  # Enable the save button
             status_label.config(text="Summary complete")  # Update status
-        
         except Exception as e:
             # Handle any errors during summarization
             messagebox.showerror("Error", f"Failed to generate summary: {e}")
             status_label.config(text="Error occurred")
     
-
+    # Function to save the generated summary to a file
     def save_summary():
         """Saves the generated summary to a user-specified text file"""
         # Get the current summary text from the output area
@@ -101,7 +104,7 @@ def create_gui():
             messagebox.showwarning("Warning", "No summary to save")
             return
             
-        # Open save dialog to get destination path from user
+        # Open save dialog to get destination path
         file_path = filedialog.asksaveasfilename(
             defaultextension=".txt",  # Default to .txt extension
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")]  # File type options
@@ -156,8 +159,9 @@ def create_gui():
     
     return window
 
-# Entry point for the application, which will run until the user closes it
-# This is where the GUI is created and the main loop starts
+# Entry point for the application
+# The application will run until the user closes the window
 if __name__ == "__main__":
     app = create_gui()  # Create the GUI
     app.mainloop()  # Start the tkinter event loop
+    
