@@ -75,7 +75,7 @@ def create_gui():
             return
             
         # Update status to show processing is happening
-        status_label.config(text="Generating summary... Please wait")
+        status_label.config(text="Generating summary - please wait...")
         window.update()  # Force UI update to show the status change
         
         # Try to generate the summary, handling any errors
@@ -138,7 +138,7 @@ def create_gui():
     upload_btn.pack(side=tk.LEFT, padx=5)
     
     # Button to trigger summarization (initially disabled until file is loaded)
-    summarize_btn = tk.Button(btn_frame, text="Summarize", command=process_text, state=tk.DISABLED)
+    summarize_btn = tk.Button(btn_frame, text="Generate Summary", command=process_text, state=tk.DISABLED)
     summarize_btn.pack(side=tk.LEFT, padx=5)
     
     # Frame for the summary output area with a label
